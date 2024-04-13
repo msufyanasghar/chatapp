@@ -13,7 +13,7 @@ class Post(models.Model):
     
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     
-    image = models.ImageField(upload_to='blog')
+    image = models.ImageField(upload_to='blog', null=True)
     
     likers = models.ManyToManyField(User, related_name='liked', blank=True)
 
