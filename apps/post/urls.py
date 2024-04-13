@@ -7,5 +7,4 @@ urlpatterns = [
     path('create/post/', views.PostCreateApiView.as_view(), name="create_post"),
     # path('post/like/', views.like, name="like_post"),
     # path('post/delete/', views.delete, name="delete_post"),
-    # path('post/user/<str:username>/', views.userPost, name="user_post"),
 ]   

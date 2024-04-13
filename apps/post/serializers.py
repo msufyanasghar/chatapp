@@ -10,12 +10,19 @@ class PostViewSerializer(serializers.ModelSerializer):
     
     likes = serializers.SerializerMethodField()
     
+    author = serializers.SerializerMethodField()
+    
     class Meta:
         model = Post
         fields = ['id', 'description', 'date_posted', 'image', 'likes','author']
         
+    def get_author(self, obj:Post):
+        return f'{obj.author.first_name} {obj.author.last_name}'
+        
     def get_likes(self, obj : Post):
         return obj.likers.count()
+    
+    # def get_auth
     
 
 class PostCreateSerializer(serializers.ModelSerializer):
