@@ -1,11 +1,15 @@
 from rest_framework import serializers
 from .models import *
-from rest_framework_simplejwt.tokens import AccessToken
 
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+def get_user_id(request):
+    token = f'{request.user}'.strip(' ')[-1]
+    user_id = int(token)
+    return user_id
+    
 class PostViewSerializer(serializers.ModelSerializer):
     
     likes = serializers.SerializerMethodField()
@@ -21,24 +25,31 @@ class PostViewSerializer(serializers.ModelSerializer):
         
     def get_likes(self, obj : Post):
         return obj.likers.count()
-    
-    # def get_auth
-    
+
 
 class PostCreateSerializer(serializers.ModelSerializer):
         
-    
     class Meta:
         model = Post
         fields = ['description', 'image']
         
     def create(self, validated_data):
         
-        token = f'{self.context['request'].user}'.strip(' ')[-1]
-        user_id = int(token)
+        user_id = get_user_id(self.context['request'])
+        
         user = User.objects.get(id=user_id)
         
         return Post.objects.create(
             author = user,
             **validated_data
         )
+        
+class LikeSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    
+    def validate_id(self, val):
+        
+        if Post.objects.filter(id = val).exists():
+            return val
+        else:
+            raise serializers.ValidationError("This Post does not exists.")
