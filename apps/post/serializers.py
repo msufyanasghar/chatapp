@@ -33,10 +33,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
         fields = ['description', 'image']
         
     def create(self, validated_data):
-        print("************************\n\n\n")
-        print(self.context['request'].data)
-        print(self.context['request'].user)
-        print("************************\n\n\n")
         
         token = f'{self.context['request'].user}'.strip(' ')[-1]
         user_id = int(token)
