@@ -53,3 +53,9 @@ class LikeSerializer(serializers.Serializer):
             return val
         else:
             raise serializers.ValidationError("This Post does not exists.")
+        
+
+# class CommentListSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Comment
+#         fields = ['id', 'post', 'date_posted']

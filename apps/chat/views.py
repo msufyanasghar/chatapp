@@ -5,8 +5,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from apps.chat.serializers import ChatRoomSerializer, ChatMessageSerializer
 from apps.chat.models import ChatRoom, ChatMessage
-from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication, JWTAuthentication
 from rest_framework.permissions import *
+from django.db.models import Q,F, Count
+
 
 class ChatRoomView(APIView):
     
@@ -15,6 +16,7 @@ class ChatRoomView(APIView):
     
 	def get(self, request, userId):
 		chatRooms = ChatRoom.objects.filter(member=userId)
+		# chatRooms = ChatRoom.objects.annotate(num_member=Count('member')).filter(Q(member=userId) & Q(num_member__gt=1))
 		serializer = ChatRoomSerializer(
 			chatRooms, many=True, context={"request": request}
 		)

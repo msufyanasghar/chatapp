@@ -30,6 +30,10 @@ class PostListCreateApiView(generics.ListCreateAPIView):
     
 class LikeApiView(APIView):
     
+    """
+    will require post id 
+    """
+    
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
