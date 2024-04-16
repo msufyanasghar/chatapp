@@ -10,7 +10,7 @@ from .permissions import *
 
 class PostListCreateApiView(generics.ListCreateAPIView):
     
-    queryset = Post.objects.prefetch_related('author').all()
+    queryset = Post.objects.prefetch_related('author').prefetch_related('comment_set').all()
     
     def get_permissions(self):
         if self.request.method=='GET':

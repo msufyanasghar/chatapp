@@ -16,12 +16,12 @@ class Post(models.Model):
     image = models.ImageField(upload_to='blog', null=True)
     
     likers = models.ManyToManyField(User, related_name='liked', blank=True)
-
+    
     def __str__(self):
         return f'{self.author.username}'
     
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     date_posted = models.DateTimeField(default=timezone.now)
     content = models.TextField()
