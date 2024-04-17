@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import (generics, permissions, authentication, status)
+from rest_framework import (generics, permissions, status)
 from .models import *
 from .serializers import *
 from rest_framework.views import APIView
@@ -10,7 +10,7 @@ from .permissions import *
 
 class PostListCreateApiView(generics.ListCreateAPIView):
     
-    queryset = Post.objects.prefetch_related('author').prefetch_related('comment_set').all()
+    queryset = Post.objects.prefetch_related('author').prefetch_related('comment_set').all().order_by('-date_posted')
     
     def get_permissions(self):
         if self.request.method=='GET':
@@ -33,16 +33,12 @@ class PostListCreateApiView(generics.ListCreateAPIView):
 class LikeApiView(APIView):
     
     """
-    will require post id 
+    will require post id, user id is picked up from request.user
     """
     
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
-        
-        # print("Post method trigerred ++++++++++++++++++++++++++")
-        # print(self.request.data)
-        # print("Post method trigerred ++++++++++++++++++++++++++")
         
         data = LikeSerializer(data = request.data)
         
@@ -56,12 +52,17 @@ class LikeApiView(APIView):
             
             if user in all_likers:
                 post.likers.remove(user)
+                post.save()
+                return Response({"count": post.likers.count(), "flag": 0},status=status.HTTP_200_OK)
+            
             else:
                 post.likers.add(user)
+                post.save()
+                return Response({"count": post.likers.count(), "flag": 1},status=status.HTTP_200_OK)
                 
             post.save()
             
-            return Response({},status=status.HTTP_200_OK)
+            return Response({"count": post.likers.count(), "flag": 1},status=status.HTTP_200_OK)
         
         return Response({"message": "Hello, world!"})
     

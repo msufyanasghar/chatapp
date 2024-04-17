@@ -9,6 +9,11 @@ from rest_framework.permissions import *
 from django.db.models import Q,F, Count
 
 
+class HandleUnexpectedCall(APIView):
+    def get(self, request):
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ChatRoomView(APIView):
     
 	# authentication_classes = [JWTAuthentication]
