@@ -6,12 +6,17 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 def get_user_id(request):
+    if(not request.user.is_authenticated):
+        return 0
     token = f'{request.user}'.strip(' ')[-1]
     user_id = int(token)
     return user_id
 
-
-# class CommentCreateSerializer()
+# TODO : do this
+# class CommentCreateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Comment
+    
 
 
 class CommentListSerializer(serializers.ModelSerializer):
@@ -24,6 +29,19 @@ class CommentListSerializer(serializers.ModelSerializer):
         
     def get_author(self, obj:Post):
         return f'{obj.author.first_name} {obj.author.last_name}'
+    
+
+class Authorserializer(serializers.ModelSerializer):
+    
+    full_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = User
+        fields = ['image', 'full_name']
+        
+    def get_full_name(self, obj : User):
+        return f'{obj.first_name} {obj.last_name}'
+        
         
 
 class PostViewSerializer(serializers.ModelSerializer):
@@ -31,17 +49,26 @@ class PostViewSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField()
     comment = serializers.SerializerMethodField()
     
-    author = serializers.SerializerMethodField()
+    author = Authorserializer()
+    
+    flag = serializers.SerializerMethodField()
     
     class Meta:
         model = Post
-        fields = ['id', 'description', 'date_posted', 'image', 'likes','author', 'comment']
+        fields = ['id', 'description', 'date_posted', 'image', 'likes','author', 'comment', 'flag']
         
-    def get_author(self, obj:Post):
-        return f'{obj.author.first_name} {obj.author.last_name}'
+    # def get_author(self, obj:Post):
+    #     return f'{obj.author.first_name} {obj.author.last_name}'
 
     def get_likes(self, obj : Post):
         return obj.likers.count()
+    
+    def get_flag(self, obj: Post):
+        user_id = get_user_id(self.context['request'])
+        user = User.objects.filter(id=user_id).first()
+        if(user in list(obj.likers.all())):
+            return 1
+        return 0
     
     def get_comment(self, obj : Comment):
         return CommentListSerializer(obj.comment_set, many=True).data
@@ -74,5 +101,3 @@ class LikeSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError("This Post does not exists.")
         
-        
-

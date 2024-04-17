@@ -27,9 +27,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	def saveMessage(self, message, userId, roomId):
 		userObj = User.objects.get(id=userId)
 		chatObj = ChatRoom.objects.get(roomId=roomId)
+  
+		if(message == 'roomid:qwerty'):
+			return {
+				'action': 'message',
+				'user': userId,
+				'roomId': roomId,
+				'message': message,
+				'userImage': userObj.image.url,
+				'userName': userObj.first_name + " " + userObj.last_name,
+			}
+  
+   
 		chatMessageObj = ChatMessage.objects.create(
 			chat=chatObj, user=userObj, message=message
 		)
+  
 		return {
 			'action': 'message',
 			'user': userId,
@@ -81,14 +94,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		action = text_data_json['action']
 		roomId = text_data_json['roomId']
 		chatMessage = {}
+		# if action == 'message'and text_data_json['message'] != 'roomid:qwerty':
 		if action == 'message':
 			message = text_data_json['message']
 			userId = text_data_json['user']
+   
 			chatMessage = await database_sync_to_async(
 				self.saveMessage
 			)(message, userId, roomId)
+			# if message != 'roomid:qwerty':
+			# 				chatMessage = await database_sync_to_async(
+			# 	self.saveMessage
+			# )(message, userId, roomId)
 		elif action == 'typing':
 			chatMessage = text_data_json
+			# print("++++++++++++++++++++++++++++++++")
+			# print(chatMessage)
 		await self.channel_layer.group_send(
 			roomId,
 			{
@@ -98,5 +119,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		)
 
 	async def chat_message(self, event):
+		# print("++++++++++++++++++++++++++++++++++++")
+		# print(event)
 		message = event['message']
 		await self.send(text_data=json.dumps(message))

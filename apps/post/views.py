@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import (generics, permissions, authentication)
+from rest_framework import (generics, permissions, authentication, status)
 from .models import *
 from .serializers import *
 from rest_framework.views import APIView
@@ -26,8 +26,10 @@ class PostListCreateApiView(generics.ListCreateAPIView):
             return  PostCreateSerializer
         
     def get_serializer_context(self):
-        return {'request': self.request}
-    
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
 class LikeApiView(APIView):
     
     """
@@ -37,6 +39,10 @@ class LikeApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
+        
+        # print("Post method trigerred ++++++++++++++++++++++++++")
+        # print(self.request.data)
+        # print("Post method trigerred ++++++++++++++++++++++++++")
         
         data = LikeSerializer(data = request.data)
         
@@ -55,9 +61,15 @@ class LikeApiView(APIView):
                 
             post.save()
             
-            return Response(PostViewSerializer(post).data)
+            return Response({},status=status.HTTP_200_OK)
         
         return Response({"message": "Hello, world!"})
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
     
 class DeletePost(APIView):
     

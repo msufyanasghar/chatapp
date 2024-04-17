@@ -93,9 +93,7 @@ CHANNEL_LAYERS = {
     }
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:3000', 'http://localhost:3000', ]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
