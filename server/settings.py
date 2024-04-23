@@ -87,6 +87,17 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'videochatapp',
+#         'HOST': 'localhost',
+#         'USER': 'newuser',
+#         'PASSWORD': 'password',
+#     }
+# }
+
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"

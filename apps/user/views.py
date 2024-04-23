@@ -32,7 +32,7 @@ class SingleUser(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        user_id = get_user_id(request)
+        user_id = get_user_id(self.request)
         user = User.objects.filter(id = user_id).first()
         
         serialized_user = UserSerializer(user)

@@ -6,22 +6,19 @@ from rest_framework.pagination import LimitOffsetPagination
 from apps.chat.serializers import ChatRoomSerializer, ChatMessageSerializer
 from apps.chat.models import ChatRoom, ChatMessage
 from rest_framework.permissions import *
-from django.db.models import Q,F, Count
+from django.http.request import HttpRequest
 
 
 class HandleUnexpectedCall(APIView):
-    def get(self, request):
-        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+    def get(self):
+        req = HttpRequest()
+        return Response(req, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChatRoomView(APIView):
     
-	# authentication_classes = [JWTAuthentication]
-	# permission_classes = [IsAuthenticated]
-    
 	def get(self, request, userId):
 		chatRooms = ChatRoom.objects.filter(member=userId)
-		# chatRooms = ChatRoom.objects.annotate(num_member=Count('member')).filter(Q(member=userId) & Q(num_member__gt=1))
 		serializer = ChatRoomSerializer(
 			chatRooms, many=True, context={"request": request}
 		)
