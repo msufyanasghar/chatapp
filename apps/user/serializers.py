@@ -6,11 +6,13 @@ from rest_framework.validators import UniqueValidator
 from apps.user.models import User
 from apps.chat.models import ChatRoom
 
+
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ['id', 'image', 'first_name', 'last_name']
+		fields = ['id', 'image', 'first_name', 'last_name', 'username']
 
+    
 class LoginSerializer(TokenObtainPairSerializer):
 	@classmethod
 	def get_token(cls, user):
